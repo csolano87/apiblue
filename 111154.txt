@@ -1,0 +1,4 @@
+H|^&|Roche^^Diagnostics|||Order Entry^Interface||HPBO^^cobas_Infinity||||P|
+P|1|111154|275294899|Villao Rodríguez|Raul Josue|1999/01/27|M|275294899|EMERGENCIA|Esta es la sección de sugerencia||2021/12/03|08:39:40
+O|1|117/n360/n420|ASTO|Calcio|Covid-19 Hisopado Antígenos
+ 

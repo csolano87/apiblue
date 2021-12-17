@@ -1,0 +1,9 @@
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <Login xmlns="http://tempuri.org">
+            <pstrUserName>[string?]</pstrUserName>
+            <pstrPassword>[string?]</pstrPassword>
+            <pblniPad>[boolean?]</pblniPad>
+        </Login>
+    </Body>
+</Envelope>

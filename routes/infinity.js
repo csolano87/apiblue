@@ -1,9 +1,21 @@
 const { Router } = require('express');
 
 
-const { erGet} = require('../controllers/infinity');
+
+
+
+const { erGet, tokenInfinity, pacienteInfinity } = require('../controllers/infinity');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { existenumeroorden } = require('../middleware/validar-orden');
+
+const { esAdminRole } = require('../middleware/validar-roles');
 const router = Router();
-router.get('/:code', erGet );
+
+//router.get('/', tokenInfinity);
+
+router.get('/:NUMEROORDEN', erGet);
+
+//router.post('/:cedula', pacienteInfinity);
 
 
 module.exports = router;

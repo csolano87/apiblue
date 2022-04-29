@@ -17,33 +17,28 @@ const validarJWT = async( req = request, res = response, next ) => {
     try {
         
         //const { id } = //continua
-        jwt.verify( token, process.env.SECRETOPRIVATEKEY );
-
+      const {id}= jwt.verify( token, process.env.SECRETOPRIVATEKEY );
+//console.log('akiestou',id)
         // leer el usuario que corresponde al uid
-       // const usuario = await Usuario.findById( id );
+        const user = await Usuario.findOne({where: id    });
+      //  console.log('Estoy consuktando la BD',user)
+if (!user) {
+    return res.status(401).json({  msg: 'Token no válido - usuario no existe en la base de datos'})
+}
 
-        /* if( !usuario ) {
-            return res.status(401).json({
-                msg: 'Token no válido - usuario no existe DB'
-            })
-        } */
 
-        // Verificar si el uid tiene estado true
-       /*  if ( !usuario.estado ) {
-            return res.status(401).json({
-                msg: 'Token no válido - usuario con estado: false'
-            })
-        }  */
-        
-        
-      //  req.usuario = usuario;
-        next();
+         if( !user.estado ) {
+           return res.status(401).json({ msg: 'Token no válido - usuario no existe DB-estado false' })
+       } 
+
+       req.usuario=user;
+       next();
 
     } catch (error) {
 
         console.log(error);
         res.status(401).json({
-            msg: 'Token no válido'
+            msg: 'Token no válido- ingrese un token valido'
         })
     }
 

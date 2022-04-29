@@ -5,43 +5,62 @@ const { check } = require('express-validator');
 const { categoriaGet,
     categoriaUpdate,
     categoriaPost,
-        categoriaDelete,
+        categoriaDelete,login
        } = require('../controllers/categoria');
+const { existenumeroorden } = require('../helpers/db-validators');
+
+
 const { validarCampos } = require('../middleware/validar-campos');
 //const Usuario = require('../models/usuarios');
 
-const {validarJWT}=require('../middleware/validar-jwt')
+const {validarJWT}=require('../middleware/validar-jwt');
+const { esAdminRole } = require('../middleware/validar-roles');
 
 
 const router = Router();
 
 
-router.get('/', categoriaGet );
+router.get('/', [validarJWT,
+    esAdminRole],categoriaGet );
 
 
 router.put('/:id',categoriaUpdate );
-
-router.post('/',[validarJWT
-    //check('AREA','El area es obligatorio').not().isEmpty(),
-   /*  check('Header.AREA','El area es obligatorio').not().isEmpty(),
-    check('Header.CODE','El code es obligatorio').not().isEmpty(),
-    check('Header.DATE','El date es obligatorio').not().isEmpty(),
-    check('Header.HOUR','El hour es obligatorio').not().isEmpty(),
-    check('Header.IDENTIFICATIONTYPE','El tipode identificacion es obligatorio').not().isEmpty(),
-    check('Header.IDENTIFIER','El identifier es obligatorio').not().isEmpty(),
-    check('Header.NAME','El name es obligatorio').not().isEmpty(),
-    check('Header.LASTNAME','El lastname es obligatorio').not().isEmpty(),
-    check('Header.SECONDLASTNAME','El secondlastname es obligatorio').not().isEmpty(),
-    check('Header.BIRTHDAY','El birthday es obligatorio').not().isEmpty(),
-    check('Header.SEX','El sex es obligatorio').not().isEmpty(),
-    check('Header.OBSERVATION','El observation es obligatorio').not().isEmpty(), */
-    //check('Lines.CODE','El code es obligatorio').not().isEmpty(),
-    //check('Lines.PRODUCTOID','El productoid es obligatorio').not().isEmpty(),
-    //check('Lines.PRODUCTONAME','El productoname es obligatorio').not().isEmpty(),
+router.get('/',login);
+router.post('/',[validarJWT,
+    esAdminRole,
   
+     check('CABECERA.NUMEROORDEN','El numero de orden dede contener 10 caracteres').isLength({min:10,max :10}),
+    
+     check('CABECERA.CODTIPOORDEN', 'El CODTIPOORDEN es obligatorio').not().isEmpty(),
+     check('CABECERA.TIPOORDEN', 'El TIPOORDEN es obligatorio').not().isEmpty(),
+     check('CABECERA.CODPROCEDENCIA', 'El CODPROCEDENCIA es obligatorio').not().isEmpty(),
+     check('CABECERA.PROCEDENCIA', 'El PROCEDENCIA es obligatorio').not().isEmpty(),
+     check('CABECERA.CODSERVICIO', 'El CODSERVICIO es obligatorio').not().isEmpty(),
+     check('CABECERA.SERVICIO', 'El SERVICIO es obligatorio').not().isEmpty(),
+     check('CABECERA.CODDOCTOR', 'El CODDOCTOR es obligatorio').not().isEmpty(),
+     check('CABECERA.DOCTOR', 'El DOCTOR es obligatorio').not().isEmpty(),
+     check('CABECERA.IMPRESORA', 'El IMPRESORA es obligatorio').not().isEmpty(),
+     check('CABECERA.FECHAORDEN', 'El FECHAORDEN es obligatorio').not().isEmpty(),
+
+     check('CABECERA.HORAORDEN', 'El HORAORDEN es obligatorio').not().isEmpty(),
+     check('CABECERA.TIPOIDENTIFICADOR', 'El TIPOIDENTIFICADOR es obligatorio').not().isEmpty(),
+     check('CABECERA.IDENTIFICADOR', 'El IDENTIFICADOR es obligatorio').not().isEmpty(),
+     check('CABECERA.NOMBRES', 'El NOMBRES es obligatorio').not().isEmpty(),
+     check('CABECERA.APELLIDO', 'El APELLIDO es obligatorio').not().isEmpty(),
+     
+
+     check('CABECERA.SEGUNDOAPELLIDO', 'El SEGUNDOAPELLIDO es obligatorio').not().isEmpty(),
+     check('CABECERA.FECHANACIMIENTO', 'El FECHANACIMIENTO es obligatorio').not().isEmpty(),
+  
+     check('CABECERA.SEXO', 'El SEXO es obligatorio').not().isEmpty(),
+     check('CABECERA.OBSERVACIONES', 'El OBSERVACIONES es obligatorio').not().isEmpty(),
+     check('DETALLE.*.CODEXAMEN', 'El CODEXAMEN es obligatorio',).not().isEmpty(),
+     check('DETALLE.*.EXAMEN', 'El EXAMEN es obligatorio').not().isEmpty(),
+     
+    validarCampos
     ],categoriaPost );
 
-router.delete('/:id',categoriaDelete );
+router.delete('/:id' ,[validarJWT,esAdminRole],categoriaDelete );
 
 //router.patch('/', usuariosPatch );
 

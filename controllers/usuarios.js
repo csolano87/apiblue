@@ -11,11 +11,11 @@ const Usuario = require('../models/usuarios');
 
 const usuariosGet = async (req, res) => {
    
-    
-        const usuarios = await Usuario.findAll({ limit: 5 });
+    const desde=Number(req.query.desde) || 0;
+        const usuarios = await Usuario.findAll({  offset: desde, limit: 5 })
    
-
-        res.json({ usuarios });
+const total = await Usuario.count();
+        res.json({ ok: true,usuarios, total:total });
        
 
 };
@@ -36,12 +36,13 @@ const usuariosGetID = async (req, res) => {
 
     const usuariosPost = async (req, res) => {
    
-    const {nombre, apellido,usuario, password, rol}=req.body;
+    try {
+        const {nombre, apellido,usuario, password, rol}=req.body;
 
-
+         
     const user= new Usuario({nombre, apellido,usuario, password, rol});
    
-
+console.log(user)
     const existeUser = await Usuario.findOne({
         where: {
             usuario: user.usuario
@@ -66,10 +67,7 @@ const usuariosGetID = async (req, res) => {
 
     //const usuario=new Usuario(body);
     await user.save();
-    res.status(201).json({ 
-
-
-       user
+    res.status(201).json({  msg:'El usuario a sido registrado con exito'
      }
        );
 /* } catch (error) {
@@ -83,6 +81,9 @@ const usuariosGetID = async (req, res) => {
 
     
   
+    } catch (error) {
+        console.log(error)
+    }
     };
 
     const usuariosUpdate = async (req, res) => {
@@ -98,12 +99,10 @@ console.log(password)
             resto.password = bcryptjs.hashSync( password, salt );
         }
     
-<<<<<<< HEAD
+
         const user = await Usuario.findCreateFind(  resto );
-=======
+
         const usuario = await Usuario.findCreateFind(  resto );
->>>>>>> 07ec100479704ff347dcd1bd236cfa134e5e57a3
-    
 
 
         res.send('update guardada con exito..');

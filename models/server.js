@@ -1,9 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+//const { infinity } = require('../controllers/infinity');
+const cookieSession = require('cookie-session')
+const cookieParser = require('cookie-parser')
 const db = require('../db/connection');
 //const { Sequelize } = require('sequelize');
 var xmlparser = require('express-xml-bodyparser');
 
+
+
+//const store=new session.MemoryStore;
 class Server {
 
     constructor() {
@@ -14,17 +20,15 @@ class Server {
             auth:       '/api/auth',
             infinity:     '/api/buscar',
             categorias: '/api/ordenes',
-            //productos:  '/api/productos',
             usuarios:   '/api/usuarios',
+            /*nuevo router*/
+            ordenes:       '/api/orden',
+            buscarordenes:     '/api/buscarordenes',
+            pacientes: '/api/pacientes',
+            login:   '/api/login',
+            doctor:  '/api/doctor',
         }
-
-
-
-     
-
-
-        // Conectar a base de datos
-        
+          // Conectar a base de datos        
         this.dbConnection();
 
         // Middlewares
@@ -32,27 +36,34 @@ class Server {
 
         // Rutas de mi aplicación
         this.routes();
+
+       
     }
 
     
 
     middlewares() {
 
-        // CORSc
-       this.app.use( cors() );
-
-      //this.app.options("*", cors({ origin: 'http://localhost:8092', optionsSuccessStatus: 200 }));
-
-       //this.app.use(cors({ origin: "http://localhost:8092", optionsSuccessStatus: 200 }));
-       
-        // Lectura y parseo del body
+   
+       this.app.use( cors());
+        this.app.use(cookieParser());
+       this.app.use(cookieSession({       
+        keys: ['veryimportantsecret'],
+        name: "session",
+        cookie: {
+          httpOnly: true, 
+          sameSite: 'none', 
+          secure: true
+                
+        }   
+        
+        })); 
+ 
         this.app.use( express.json() );
 
         this.app.use(xmlparser());
-       // var xmlparser = require('express-xml-bodyparser');
-        // Directorio Público
-      //  this.app.use( express.static('public') );
-
+       
+        this.app.use( express.static('public') );
     }
     async dbConnection() {
         try {
@@ -68,8 +79,14 @@ class Server {
         this.app.use( this.paths.categorias, require('../routes/categoria'));
         this.app.use( this.paths.usuarios, require('../routes/usuarios'));
         this.app.use( this.paths.infinity, require('../routes/infinity'));
-       /*  this.app.use( this.authPath, require('../routes/auth'));
-        this.app.use( this.usuariosPath, require('../routes/usuarios')); */
+    /*nuevas router*/
+
+   // this.app.use( this.paths.ordenes, require('../routes/infinity'));
+    this.app.use( this.paths.buscarordenes, require('../routes/buscarordenes'));
+    this.app.use( this.paths.login, require('../routes/login'));
+    this.app.use( this.paths.pacientes, require('../routes/pacientes'));
+    this.app.use(this.paths.doctor, require('../routes/doctor'));
+
 
     }
 

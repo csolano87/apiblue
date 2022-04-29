@@ -3,44 +3,58 @@ const  xpath = require('xpath')
 , dom = require('xmldom').DOMParser
 
 const axios = require('axios');
-const loginInfinity= async ()=>{
-return new Promise((resolve,reject)=>{ 
+const localStorage = require('localStorage');
+
+
+const loginInfinity = async (encodedToken, tokenResult)=>{
+  console.log('tokenEncodedToken >>> ', encodedToken);
+
+  console.log('tokenResult >>> ', tokenResult);
+  if(tokenResult == undefined || tokenResult == '' || tokenResult == null) {
     
+    console.log('LLAMANDO AL SERVICIO LOGIN ......');
+    return new Promise(async  (resolve,reject)=>{       
+      let params={
+        'soap_method':`${process.env.Login}`,
+        'pstrUserName':`${process.env.pstrUserName}`,
+        'pstrPassword':`${process.env.pstrPassword}`,
+        'pblniPad':0
+    };
 
+    try {
+      
+      const intanc= axios.create({
+     
+        baseURL: `${process.env.baseURL}/zdk.ws.wSessions.cls`,
+        params,
+        headers: {'Authorization':`Basic ${encodedToken}` }
+      }); 
+     
 
-    const CacheUserName = '_SYSTEM'
+      const resp= await intanc.get();
  
-const CachePassword = 'INFINITY'
+      const rawcookies=resp.headers['set-cookie']
 
-const token = `${CacheUserName}:${CachePassword}`;
-const encodedToken = Buffer.from(token).toString('base64');
-const session_url = 'http://192.168.100.102/csp/acb/zdk.ws.wSessions.cls?pstrUserName=ROCHE&pstrPassword=Helpdesk1&pblniPad=0&soap_method=Login'
+      localStorage.setItem('rawcookies',rawcookies)
+       const  doc = new dom().parseFromString(resp.data);       
+      const select  = xpath.useNamespaces({'SOAP-ENV':'http://tempuri.org'})
+      const sn = select('string(//SOAP-ENV:LoginResult)', doc);
+      console.log('campo LoginResult:', sn);
+      resolve(sn)
 
-const config = {
-  method: 'get',
-  url: session_url,
-  
-  
-  headers: { 'Authorization': 'Basic '+ encodedToken }
-};
-axios(config)
-    .then(function (response) {
-   
+
+
+
+      
+    } catch (error) {
+      console.log('ERROR DE LOGIN ',error)
+    }
+        
+    })   
     
-const  doc = new dom().parseFromString(response.data);
-     const select  = xpath.useNamespaces({'SOAP-ENV':'http://tempuri.org'})
-     const sn = select('string(//SOAP-ENV:LoginResult)', doc);
-console.log('Token:', sn);
-resolve(sn)
-})
-.catch(function (error) {
-  //console.log(error);
-}); 
+  }
+  console.log('NOOOOOO LLAMANDO AL SERVICIO LOGIN ......');
+  return tokenResult;
 
-
-
-
-    })
 }
-
 module.exports={loginInfinity}

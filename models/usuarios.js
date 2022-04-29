@@ -3,7 +3,8 @@ const db =require ('../db/connection');
 
 
 const Usuario=db.define('Usuario',{ 
-    
+     
+
 nombre:{
     type:DataTypes.STRING
 },
@@ -34,9 +35,9 @@ estado:{
     tableName: "usuarios"
 
 }); 
-// Usuario.methods.toJSON = function() {
-//     const { __v, password, id, ...usuario  } = this.toObject();
-//     usuario.uid = _id;
-//     return usuario;
-// }
+// UsuarioSchema.methods.toJSON = function() {
+ //  const { __v, password, id, ...usuario  } = this.toObject();
+//    usuario.uid = _id;
+ //   return usuario;
+/// }
 module.exports= Usuario; 

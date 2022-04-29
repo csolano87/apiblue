@@ -21,7 +21,7 @@ const login=async (req,res)=>{
 //const usuario=await Usuario.findOne({correo});
 if (!existeuser) {
     return res.status(400).json({
-        msg:'usuario/ password no son correctos-coreo'
+        msg:'usuario/ password no son correctos'
     });
 
 }
@@ -35,21 +35,18 @@ if (!validarPassword) {
 //console.log(existeusuario.id)
 const token =await generarJWT(existeuser.id);
 
-<<<<<<< HEAD
+
 
 console.log(existeuser)
 
-=======
 
-console.log(existeusuario)
 
->>>>>>> 07ec100479704ff347dcd1bd236cfa134e5e57a3
+
+
+
         
 
-        res.json({
-            existeuser,
-token
-          
+        res.status(200).json({ existeuser,token         
         });
     /* } catch (error) {
         console.log(error);

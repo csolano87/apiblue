@@ -17,11 +17,33 @@ const { Console } = require('console');
 const doctor=async(req,res)=>{
 
 
-    const tokenID=localStorage.getItem('Idtoken')
+    const CacheUserName = `${process.env.CacheUserName}`
+    const CachePassword = `${process.env.CachePassword}`
+    const token = `${CacheUserName}:${CachePassword}`;
+    const encodedToken = Buffer.from(token).toString('base64');
+ /* 
+    appt.set('encodedToken', encodedToken);
+    console.log('return TokenAuthorization :: ', encodedToken);
+ 
+    const tokenResult = appt.get('tokenResult'); */
+    const responseToken = await loginInfinity(encodedToken);
+    //const responseToken = await loginInfinity(encodedToken, tokenResult);
+ /* 
+    appt.set('tokenResult', responseToken);
+    console.log('retorna LoginResult: ', responseToken)
+     const Idtoken = responseToken; */
+
+     localStorage.setItem('Idtoken', responseToken);
+     const tokenResult =localStorage.getItem('Idtoken');
+
+
+     //const tokenID = localStorage.getItem('Idtoken')
+
+    //const tokenID=localStorage.getItem('Idtoken')
     const rawcookies=localStorage.getItem('rawcookies');
 let params={
     'soap_method':'GetList',
-    'pstrSessionKey':`${tokenID}`,
+    'pstrSessionKey':`${tokenResult}`,
     'pstrDemographicCode':'',
     'pstrDemographicName':'Doctor',
     'pstrValueCode':'',
@@ -38,16 +60,24 @@ const instance=axios.create({
 
 const resp=await instance.get();
 
- 
+try {
+     
 xml2js.parseString(resp.data, { explicitArray: false, mergeAttrs: true, explicitRoot: false, tagNameProcessors: [stripNS] }, (err, result) => {
-   if (err) {
-      throw err
-   }
-const listadoctor = JSON.parse(JSON.stringify(result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL))
-//const listadoctor=result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
+    if (err) {
+       throw err
+    }
+ const listadoctor = JSON.parse(JSON.stringify(result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL))
+ //const listadoctor=result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
+ 
+ 
+ res.status(200).json({ok:true,lista:listadoctor})
+ }) 
+} catch (error) {
+    console.log('---- line 147777777');
+    //appt.set('tokenResult', "");
 
-
-res.status(200).json({ok:true,lista:listadoctor})
-}) 
+    localStorage.removeItem('Idtoken'); 
+    doctor(req, res); 
+}
 }
 module.exports={doctor}

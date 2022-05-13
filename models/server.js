@@ -21,12 +21,15 @@ class Server {
             infinity:     '/api/buscar',
             categorias: '/api/ordenes',
             usuarios:   '/api/usuarios',
+            roles:   '/api/roles',
             /*nuevo router*/
             ordenes:       '/api/orden',
             buscarordenes:     '/api/buscarordenes',
             pacientes: '/api/pacientes',
             login:   '/api/login',
             doctor:  '/api/doctor',
+            mail:'/api/mail',
+            password:'/api/password'
         }
           // Conectar a base de datos        
         this.dbConnection();
@@ -81,12 +84,13 @@ class Server {
         this.app.use( this.paths.infinity, require('../routes/infinity'));
     /*nuevas router*/
 
-   // this.app.use( this.paths.ordenes, require('../routes/infinity'));
+    this.app.use( this.paths.roles, require('../routes/roles'));
     this.app.use( this.paths.buscarordenes, require('../routes/buscarordenes'));
     this.app.use( this.paths.login, require('../routes/login'));
     this.app.use( this.paths.pacientes, require('../routes/pacientes'));
     this.app.use(this.paths.doctor, require('../routes/doctor'));
-
+    this.app.use(this.paths.mail, require('../routes/mail'));
+    this.app.use(this.paths.password, require('../routes/password'));
 
     }
 

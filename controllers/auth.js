@@ -58,5 +58,21 @@ console.log(existeuser)
 
 
 };
+const renewToken = async(req, res = response) => {
 
-module.exports={login};
+    const id = req.usuario.id;
+console.log(id)
+    // Generar el TOKEN - JWT
+    const token = await generarJWT( id );
+    const user = await Usuario.findOne({
+        where: {
+            id
+        }
+    }); 
+    res.json({
+        ok: true,
+        token,user
+    });
+
+}
+module.exports={login,renewToken};

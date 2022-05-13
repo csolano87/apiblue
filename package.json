@@ -21,6 +21,7 @@
     "lru-cache": "^6.0.0",
     "node-fetch": "^2.6.6",
     "node-localstorage": "^2.2.1",
+    "nodemailer": "^6.7.5",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "request": "^2.88.2",

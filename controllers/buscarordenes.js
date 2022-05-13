@@ -55,21 +55,21 @@ const buscarordenes = async (req, res) => {
         
    if ( Array.isArray(listaordenes) == true ){
               
-      const listaorden=   listaordenes.filter( function (el){ 
+/*       const listaorden=   listaordenes.filter( function (el){ 
          return el.IsOrderValidated === 'true',
       el.Origin ==='CONSULTA EXTERNA' });
-   console.log('es un array',listaordenes.SurNameAndName)
-       res.status(200).json({ ok: true, listaordenes: listaorden })
+   console.log('es un array',listaordenes.SurNameAndName) */
+       res.status(200).json({ ok: true, listaordenes: listaordenes })
      
 
     } else{ 
        let listaArray=[];
        listaArray.push(listaordenes)
      console.log('es un obj convertido en array ',listaArray)
-       const listaorden=   listaArray.filter( function (el){ 
+      /*  const listaorden=   listaArray.filter( function (el){ 
           return el.IsOrderValidated === 'true',
-          el.Origin ==='CONSULTA EXTERNA'});
-       res.status(200).json({ ok: true, listaordenes: listaorden }) 
+          el.Origin ==='CONSULTA EXTERNA'}); */
+       res.status(200).json({ ok: true, listaordenes: listaArray }) 
       }
 
          
@@ -92,38 +92,45 @@ const buscarordenes = async (req, res) => {
 
 const buscarordene = async (req, res) => {
 
-   const { PatientID2, SampleID } = req.body;
+   const { PatientID2, SampleID ,todos} = req.body;
+
+   console.log({ PatientID2, SampleID ,todos})
+   const vertodas=req.body.todos
  const user = req.usuario
-  console.log('usuario', user.usuario)
+  console.log('usuario existente',user.doctor)
 
    const CacheUserName = `${process.env.CacheUserName}`
    const CachePassword = `${process.env.CachePassword}`
    const token = `${CacheUserName}:${CachePassword}`;
    const encodedToken = Buffer.from(token).toString('base64');
-
+/* 
    appt.set('encodedToken', encodedToken);
    console.log('return TokenAuthorization :: ', encodedToken);
 
-   const tokenResult = appt.get('tokenResult');
-
-   const responseToken = await loginInfinity(encodedToken, tokenResult);
-
+   const tokenResult = appt.get('tokenResult'); 
+ */
+   const responseToken = await loginInfinity(encodedToken);
+/* 
    appt.set('tokenResult', responseToken);
    console.log('retorna LoginResult: ', responseToken)
-    const Idtoken = responseToken;
-  localStorage.setItem('Idtoken', Idtoken);
-
+    const Idtoken = responseToken; 
+  localStorage.setItem('Idtoken', Idtoken);localStorage.setItem('Idtoken', Idtoken);*/
+  localStorage.setItem('Idtoken', responseToken);
+  const tokenResult =localStorage.getItem('Idtoken');
    const rawcookies = localStorage.getItem('rawcookies');  
-   let params = {
-        'soap_method': `${process.env.Ordenes}`,
-        'pstrSessionKey': `${Idtoken}`,
-       // 'pstrSessionKey': `${responseToken}`,
-       
-        'pstrPatientID2': `${PatientID2}`,
-        'pstrSampleID': `${SampleID}`,
-      'pstrDoctorID':`${user.usuario}`
-   };
 
+
+   
+      let params = {
+         'soap_method': `${process.env.Ordenes}`,
+         'pstrSessionKey': `${tokenResult}`,             
+         'pstrPatientID2': `${PatientID2}`,
+         'pstrSampleID': `${SampleID}`,
+         'pstrDoctorID': (SampleID ? `${user.usuario}`:"")
+    };
+ 
+ 
+  
  
      
         const intance = axios.create({
@@ -132,52 +139,106 @@ const buscarordene = async (req, res) => {
             headers: { 'cookie': rawcookies }
         });
      
-        
+    //   console.log(intance)
             const resp = await intance.post();
            
             try {
                   
-                  xml2js.parseString(resp.data, { explicitArray: false, mergeAttrs: true, explicitRoot: false, tagNameProcessors: [stripNS] }, (err, result) => {
-               
-                     if (err) {
-                   
-                        throw err
-                     }  
-                   
-                                         
-                    const listaordenes = result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
-                  
-
+               xml2js.parseString(resp.data, { explicitArray: false, mergeAttrs: true, explicitRoot: false, tagNameProcessors: [stripNS] }, (err, result) => {
             
+                  if (err) {
+                
+                     throw err
+                  }  
+                
+                                      
+                 const listaordenes = result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
+               
 
+         
+              //  console.log(listaordenes)
 
-                   if (listaordenes != undefined) {
-                     if ( Array.isArray(listaordenes) === true ){
-                 
-                              
-                        res.status(200).json({ok: true,  listaordenes: listaordenes })
-                                     
-                     }  else { 
+               if (listaordenes != undefined ) {
+                          if (SampleID ==="" ||SampleID === null||SampleID ==='' ) {
+                           /* if (SampleID !="" ||SampleID != null||SampleID != '') {
+                              res.status(200).json({ok: true,  listaordenes: listaordenes })
+                           }else{
+
+                         }
+                   */
+                        if ( Array.isArray(listaordenes) === true ){
+                          
+                               /* buscar donde de doctor en la lista */
+                            const listadoctor=listaordenes.some(item => item.Doctor === `${user.doctor}`);
+                            
+                             console.log('retorna la pregunta del array',listadoctor)
+                        /*  si existe  el doctor */
+                               if(listadoctor === true){
+                                   /* validar chechbox si es falso */
+                                     if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
+                                               const listaorden= listaordenes.filter( function (el){ return el.Doctor === `${user.doctor}`});
+                                                  res.status(200).json({ok: true,  listaordenes: listaorden })
+                                                     /* validar chechbox si es true */     
+                                     }else{
+                                        res.status(200).json({ok: true,  listaordenes: listaordenes })
+                                          // res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+                                          } 
+                        /*si el doctor no existe en la orden */
+                            }else{
+                        res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+                     }                         
+                     } else{
+                        /* si es objecto se guarda el array */
                         let listaArray=[];
                         listaArray.push(listaordenes)
-                      
+                        /* si existe el doctor */
+                        /* agregue esta linea nueva  */
                        
-                        res.status(200).json({ ok: true,  listaordenes:listaArray }) 
-                       }  
-                   } else {
-                     res.status(200).json({ ok: false,  listaordenes: "undefined"}) 
-                   }
-                   
-               
-                                     
-                  });  
-          
-               
-         } catch (error) {
-            console.log('---- line 147777777');
-            appt.set('tokenResult', "");
-            buscarordene(req, res);
-         } 
+                        const listaorden=listaArray.some(item => item.Doctor === `${user.doctor}`);
+/* si tiene un aorden del doctor */
+                        if(listaorden === true){
+                           /* validar chechbox si es falso */
+                   if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
+                         const listaarray=   listaArray.filter( function (el){ 
+                            return el.Doctor === `${user.doctor}`});
+                         res.status(200).json({ok: true,  listaordenes: listaarray })
+                     /* validar chechbox si es true */     
+                }else{
+                   res.status(200).json({ok: true,  listaordenes: listaArray })
+                  // res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+                } 
+                /*si el doctor no existe en la orden */
+             }else{
+                res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+             }
+                     }
+
+                  } else {
+
+
+                           let listaArraySampleID=[];
+                           listaArraySampleID.push(listaordenes)
+                           /* aqui ingresa el error de cedula cuando no encuentra */
+                           res.status(200).json({ok: true,  listaordenes: listaArraySampleID })
+                              //res.status(400).json({ ok: false,  msg: `No existe orden registrada con el ${SampleID} ingresado`})         
+                            }
+
+
+                } else {
+                  res.status(400).json({ ok: false,  msg: 'No existe orden registrada con el número ingresado'}) 
+                } 
+                
+            
+                                  
+               });  
+       
+            
+      } catch (error) {
+         console.log('---- line 147777777');
+         localStorage.removeItem('Idtoken'); 
+         buscarordene(req, res); 
+      } 
+        /* try catch */
    
       
 }   

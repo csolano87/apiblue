@@ -6,10 +6,11 @@ const axios = require('axios');
 const localStorage = require('localStorage');
 
 
-const loginInfinity = async (encodedToken, tokenResult)=>{
-  console.log('tokenEncodedToken >>> ', encodedToken);
-
-  console.log('tokenResult >>> ', tokenResult);
+const loginInfinity = async (encodedToken)=>{
+ // console.log('tokenEncodedToken >>> ', encodedToken);
+ const tokenResult =localStorage.getItem('Idtoken');
+ console.log(tokenResult)
+  //console.log('tokenResult >>> ', tokenResult);
   if(tokenResult == undefined || tokenResult == '' || tokenResult == null) {
     
     console.log('LLAMANDO AL SERVICIO LOGIN ......');
@@ -40,6 +41,7 @@ const loginInfinity = async (encodedToken, tokenResult)=>{
       const select  = xpath.useNamespaces({'SOAP-ENV':'http://tempuri.org'})
       const sn = select('string(//SOAP-ENV:LoginResult)', doc);
       console.log('campo LoginResult:', sn);
+
       resolve(sn)
 
 

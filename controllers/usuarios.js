@@ -37,10 +37,20 @@ const usuariosGetID = async (req, res) => {
     const usuariosPost = async (req, res) => {
    
     try {
-        const {nombre, apellido,usuario, password, rol}=req.body;
+        const {doctor, codigo_doctor,usuario, password, rol}=req.body;
+console.log({doctor, codigo_doctor,usuario, password, rol})
+    
 
-         
-    const user= new Usuario({nombre, apellido,usuario, password, rol});
+      let nomdoctor = doctor.indexOf(" ");
+      
+      let nombredoctor = doctor.substring( nomdoctor);
+     
+
+const codDoctor=doctor.indexOf(" ");
+         let ceduladoctor = doctor.substring(0, codDoctor);
+
+        // const report=pdf.replace('localhost','http://192.168.1.2')
+    const user= new Usuario({doctor:nombredoctor, codigo_doctor:ceduladoctor,usuario, password, rol});
    
 console.log(user)
     const existeUser = await Usuario.findOne({
@@ -88,24 +98,24 @@ console.log(user)
 
     const usuariosUpdate = async (req, res) => {
         const {id} =req.params;
-        //const usuario = await Usuario.findByPk(id);
-     
-
-        const {  password, ...resto } = req.body;
-console.log(password)
-        if ( password ) {
-            // Encriptar la contraseña
+        const {body}=req
+     console.log(id)
+     const existeUser = await Usuario.findByPk(id);
+     console.log(existeUser)
+      /*   
+       if ( password ) {
+           
             const salt = bcryptjs.genSaltSync();
             resto.password = bcryptjs.hashSync( password, salt );
-        }
+        }  */
     
 
-        const user = await Usuario.findCreateFind(  resto );
+       //const user = await Usuario.findCreateFind(  resto );
 
-        const usuario = await Usuario.findCreateFind(  resto );
+         await existeUser.update(  body );
+       
 
-
-        res.send('update guardada con exito..');
+       res.status(200).json({ok:true, usuario:existeUser})
     
     };
 

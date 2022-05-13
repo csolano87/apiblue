@@ -5,10 +5,10 @@ const db =require ('../db/connection');
 const Usuario=db.define('Usuario',{ 
      
 
-nombre:{
+doctor:{
     type:DataTypes.STRING
 },
-apellido:{
+codigo_doctor:{
     type:DataTypes.STRING
 },
 usuario:{

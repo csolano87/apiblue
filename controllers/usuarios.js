@@ -21,11 +21,13 @@ const total = await Usuario.count();
 };
 
 const usuariosGetID = async (req, res) => {
-   
-    
+    const {id} =req.params;
+    const existeUser = await Usuario.findByPk(id);
   //  const usuario = await Usuario.find();
 
-    res.json({ usuarios });
+
+
+    res.status(200).json({ ok:true, user: existeUser });
    
 
 };
@@ -114,6 +116,9 @@ console.log(user)
 
          await existeUser.update(  body );
        
+
+         const validPassword= await bcryptjs.compare(existeUser.password)
+         console.log(validPassword)
 
        res.status(200).json({ok:true, usuario:existeUser})
     

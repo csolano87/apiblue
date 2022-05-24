@@ -8,7 +8,7 @@ return new Promise((resolve,reject)=>{
 
 const payload={id};
 jwt.sign(payload, process.env.SECRETOPRIVATEKEY,{
-    expiresIn:'4h'
+    expiresIn:'2h'
 },(err,token)=>{
     if(err){
     console.log(err);

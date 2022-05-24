@@ -10,7 +10,7 @@ return res.status(500).json({msg : 'Se quiere verificar el role sin validar el t
 const {rol,nombre}=req.usuario;
 console.log(rol)
 
-if (rol!== 'ADMIN') {
+if (rol!== 'DOCTOR_ADMIN') {
    return res.status(401).json({msg :`${nombre} no es administrador-no puede hacer esto`}) 
 }
 next();

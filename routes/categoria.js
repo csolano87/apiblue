@@ -26,8 +26,8 @@ router.get('/', [validarJWT,
 
 router.put('/:id',categoriaUpdate );
 router.get('/',login);
-router.post('/',[validarJWT,
-    esAdminRole,
+router.post('/',[
+  
   
      check('CABECERA.NUMEROORDEN','El numero de orden dede contener 10 caracteres').isLength({min:10,max :10}),
     

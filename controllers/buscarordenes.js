@@ -97,6 +97,8 @@ const buscarordene = async (req, res) => {
    console.log({ PatientID2, SampleID ,todos})
    const vertodas=req.body.todos
  const user = req.usuario
+
+ console.log('Usuario de consulta',user)
   console.log('usuario existente',user.doctor)
 
    const CacheUserName = `${process.env.CacheUserName}`
@@ -157,6 +159,9 @@ const buscarordene = async (req, res) => {
 
          
               //  console.log(listaordenes)
+                   /*   if (user.rol === 'DOCTOR_ADMIN' ) {
+                        res.status(200).json({ok: true,  listaordenes: listaordenes })
+                     }else */
 
                if (listaordenes != undefined ) {
                           if (SampleID ==="" ||SampleID === null||SampleID ==='' ) {
@@ -193,7 +198,10 @@ const buscarordene = async (req, res) => {
                         listaArray.push(listaordenes)
                         /* si existe el doctor */
                         /* agregue esta linea nueva  */
-                       
+                        console.log(listaordenes)
+                       /*  if (user.rol === 'DOCTOR_ADMIN' ) {
+                           res.status(200).json({ok: true,  listaordenes: listaArray })
+                        } */
                         const listaorden=listaArray.some(item => item.Doctor === `${user.doctor}`);
 /* si tiene un aorden del doctor */
                         if(listaorden === true){

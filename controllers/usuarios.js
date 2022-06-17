@@ -12,7 +12,7 @@ const Usuario = require('../models/usuarios');
 const usuariosGet = async (req, res) => {
    
     const desde=Number(req.query.desde) || 0;
-        const usuarios = await Usuario.findAll({  offset: desde, limit: 5 })
+        const usuarios = await Usuario.findAll({  offset: desde, limit: 10 })
    
 const total = await Usuario.count();
         res.json({ ok: true,usuarios, total:total });
@@ -41,7 +41,7 @@ const usuariosGetID = async (req, res) => {
     try {
         const {doctor, codigo_doctor,usuario, password, rol}=req.body;
 console.log({doctor, codigo_doctor,usuario, password, rol})
-    
+   /*  
 
       let nomdoctor = doctor.indexOf(" ");
       
@@ -49,10 +49,10 @@ console.log({doctor, codigo_doctor,usuario, password, rol})
      
 
 const codDoctor=doctor.indexOf(" ");
-         let ceduladoctor = doctor.substring(0, codDoctor);
+         let ceduladoctor = doctor.substring(0, codDoctor); */
 
-        // const report=pdf.replace('localhost','http://192.168.1.2')
-    const user= new Usuario({doctor:nombredoctor, codigo_doctor:ceduladoctor,usuario, password, rol});
+    
+    const user= new Usuario({doctor:doctor.Description, codigo_doctor:doctor.ValueCode,usuario, password, rol});
    
 console.log(user)
     const existeUser = await Usuario.findOne({
@@ -99,26 +99,22 @@ console.log(user)
     };
 
     const usuariosUpdate = async (req, res) => {
-        const {id} =req.params;
-        const {body}=req
-     console.log(id)
+        const id =req.params.id;
+      const {body} =req
+    
      const existeUser = await Usuario.findByPk(id);
-     console.log(existeUser)
-      /*   
-       if ( password ) {
-           
-            const salt = bcryptjs.genSaltSync();
-            resto.password = bcryptjs.hashSync( password, salt );
-        }  */
+     
+
+     if (!existeUser) {
+        res.status(400).json({ok:true, msg:'no existe usuario'})
+     }
+
     
 
-       //const user = await Usuario.findCreateFind(  resto );
-
-         await existeUser.update(  body );
+      await  existeUser.update(body);
        
 
-         const validPassword= await bcryptjs.compare(existeUser.password)
-         console.log(validPassword)
+       
 
        res.status(200).json({ok:true, usuario:existeUser})
     

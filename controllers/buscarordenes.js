@@ -128,7 +128,8 @@ const buscarordene = async (req, res) => {
          'pstrSessionKey': `${tokenResult}`,             
          'pstrPatientID2': `${PatientID2}`,
          'pstrSampleID': `${SampleID}`,
-         'pstrDoctorID': (SampleID ? `${user.usuario}`:"")
+        // 'pstrDoctorID': (SampleID ? `${user.usuario}`:"")
+        'pstrDoctorID': (SampleID && `${user.rol}` != 'DOCTOR_ADMIN'?  `${user.usuario}`:"")
     };
  
  
@@ -156,85 +157,113 @@ const buscarordene = async (req, res) => {
                                       
                  const listaordenes = result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
                
-
+console.log(listaordenes)
          
-              //  console.log(listaordenes)
-                   /*   if (user.rol === 'DOCTOR_ADMIN' ) {
-                        res.status(200).json({ok: true,  listaordenes: listaordenes })
-                     }else */
-
-               if (listaordenes != undefined ) {
-                          if (SampleID ==="" ||SampleID === null||SampleID ==='' ) {
-                           /* if (SampleID !="" ||SampleID != null||SampleID != '') {
-                              res.status(200).json({ok: true,  listaordenes: listaordenes })
-                           }else{
-
-                         }
-                   */
-                        if ( Array.isArray(listaordenes) === true ){
-                          
-                               /* buscar donde de doctor en la lista */
-                            const listadoctor=listaordenes.some(item => item.Doctor === `${user.doctor}`);
+                 switch (user.rol) {
+                  case 'DOCTOR':
+                    //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
+                    if (listaordenes != undefined ) {
+                
+                   
+                     if (SampleID ==="" ||SampleID === null||SampleID ==='' ) {
+                
+                   if ( Array.isArray(listaordenes) === true ){
+                     
+                        console.log('AQUI ESTA EL DOCTOR',user.doctor)
+                       const listadoctor=listaordenes.some(item => item.Doctor === `${user.doctor}`);
+                       
+                        console.log('retorna la pregunta del array',listadoctor)
+                  
+                          if(listadoctor === true){
                             
-                             console.log('retorna la pregunta del array',listadoctor)
-                        /*  si existe  el doctor */
-                               if(listadoctor === true){
-                                   /* validar chechbox si es falso */
-                                     if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
-                                               const listaorden= listaordenes.filter( function (el){ return el.Doctor === `${user.doctor}`});
-                                                  res.status(200).json({ok: true,  listaordenes: listaorden })
-                                                     /* validar chechbox si es true */     
-                                     }else{
-                                        res.status(200).json({ok: true,  listaordenes: listaordenes })
-                                          // res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
-                                          } 
-                        /*si el doctor no existe en la orden */
-                            }else{
-                        res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
-                     }                         
-                     } else{
-                        /* si es objecto se guarda el array */
-                        let listaArray=[];
-                        listaArray.push(listaordenes)
-                        /* si existe el doctor */
-                        /* agregue esta linea nueva  */
-                        console.log(listaordenes)
-                       /*  if (user.rol === 'DOCTOR_ADMIN' ) {
-                           res.status(200).json({ok: true,  listaordenes: listaArray })
-                        } */
-                        const listaorden=listaArray.some(item => item.Doctor === `${user.doctor}`);
-/* si tiene un aorden del doctor */
-                        if(listaorden === true){
-                           /* validar chechbox si es falso */
-                   if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
-                         const listaarray=   listaArray.filter( function (el){ 
-                            return el.Doctor === `${user.doctor}`});
-                         res.status(200).json({ok: true,  listaordenes: listaarray })
-                     /* validar chechbox si es true */     
-                }else{
-                   res.status(200).json({ok: true,  listaordenes: listaArray })
-                  // res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
-                } 
-                /*si el doctor no existe en la orden */
-             }else{
-                res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
-             }
-                     }
+                                if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
+                                          const listaorden= listaordenes.filter( function (el){ return el.Doctor === `${user.doctor}`});
+                                             res.status(200).json({ok: true,  listaordenes: listaorden })
+                                                /* validar chechbox si es true */     
+                                }else{
+                                   res.status(200).json({ok: true,  listaordenes: listaordenes })
+                                     
+                                     } 
+                 
+                       }else{
+                   res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+                }                         
+                } else{
+        
+                   let listaArray=[];
+                   listaArray.push(listaordenes)
+               
+                 
+                   console.log(listaordenes)
+              
+                   const listaorden=listaArray.some(item => item.Doctor === `${user.doctor}`);
 
-                  } else {
+                   if(listaorden === true){
+                      /* validar chechbox si es falso */
+              if (vertodas === 'false' || vertodas === "" || vertodas === null ||  vertodas === false) {
+                    const listaarray=   listaArray.filter( function (el){ 
+                       return el.Doctor === `${user.doctor}`});
+                    res.status(200).json({ok: true,  listaordenes: listaarray })
+                /* validar chechbox si es true */     
+           }else{
+              res.status(200).json({ok: true,  listaordenes: listaArray })
+           
+           } 
+
+        }else{
+           res.status(400).json({msg:`El doctor no tiene ordenes registradadas con el ${PatientID2} ingresado`})
+        }
+                }
+
+             } else {
 
 
-                           let listaArraySampleID=[];
-                           listaArraySampleID.push(listaordenes)
-                           /* aqui ingresa el error de cedula cuando no encuentra */
-                           res.status(200).json({ok: true,  listaordenes: listaArraySampleID })
-                              //res.status(400).json({ ok: false,  msg: `No existe orden registrada con el ${SampleID} ingresado`})         
-                            }
+                      let listaArraySampleID=[];
+                      listaArraySampleID.push(listaordenes)
+                      /* aqui ingresa el error de cedula cuando no encuentra */
+                      res.status(200).json({ok: true,  listaordenes: listaArraySampleID })
+                         //res.status(400).json({ ok: false,  msg: `No existe orden registrada con el ${SampleID} ingresado`})         
+                       }
+                 //condicion rol
 
+                     /*  }else if( user.rol === 'DOCTOR_ADMIN'){
+                         res.status(200).json({ok: true,  listaordenes: listaordenes })
+                      } */
 
-                } else {
-                  res.status(400).json({ ok: false,  msg: 'No existe orden registrada con el número ingresado'}) 
-                } 
+           } else {
+             res.status(400).json({ ok: false,  msg: 'No existe orden registrada con el número ingresado'}) 
+           } 
+                    break;
+               /*    case 'DOCTOR_ADMIN':
+                   
+                    res.status(200).json({ok:true , listaordenes:listaordenes})
+                    break; */
+                    case 'DOCTOR_ADMIN':
+                    //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
+                    if ( Array.isArray(listaordenes) === true ){
+
+                     res.status(200).json({ok:true , listaordenes:listaordenes})
+
+                    }else{ 
+                     let guardarlista=[];
+                     guardarlista.push(listaordenes)
+                     console.log(guardarlista)
+                     res.status(200).json({ok:true , listaordenes:guardarlista})
+                   
+                    }
+                    break;
+               
+                 // case 'ADMIN':
+                    //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+                //    break;
+                  default:
+                     res.status(200).json({ok:true , listaordenes:listaordenes})
+                    //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+                    break;
+                }
+                   
+
+             
                 
             
                                   

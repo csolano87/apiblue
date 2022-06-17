@@ -68,7 +68,8 @@ xml2js.parseString(resp.data, { explicitArray: false, mergeAttrs: true, explicit
     }
  const listadoctor = JSON.parse(JSON.stringify(result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL))
  //const listadoctor=result.Body.GetListResponse.GetListResult.diffgram.DefaultDataSet.SQL;
- 
+// const orden_listadoctor = listadoctor.sort();
+
  
  res.status(200).json({ok:true,lista:listadoctor})
  }) 
